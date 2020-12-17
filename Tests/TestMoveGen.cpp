@@ -11,28 +11,71 @@ TEST(Board, BoardFunctions)
 	EXPECT_TRUE(init_position.isPawn(SquareName::B1));
 }
 
-std::vector<Board> perft_inc(const std::vector<Board>& input, Player p)
+struct PerftResults
 {
-	std::vector<Board> results;
-	for (const auto& b : input)
-		move_gen(b, p, results);
-	return results;
+	int nodes = 0;
+	int captures = 0;
+	int en_passants = 0;
+};
+
+void perft_dfs(const Board& board, Player p, int depth_left, PerftResults& accum)
+{
+	Player otherPlayer = p == Player::White ? Player::Black : Player::White;
+	std::vector<MoveGenResult> results;
+	move_gen(board, p, results);
+
+	if (depth_left == 1)
+	{
+		for (const auto& node : results)
+		{
+			accum.nodes += 1;
+			if (node.move_type == MoveType::Capture || node.move_type == MoveType::CaptureEnPassant)
+				accum.captures += 1;
+			if (node.move_type == MoveType::CaptureEnPassant)
+				accum.en_passants += 1;
+		}
+	}
+	else
+	{
+		for (const auto& node : results)
+			perft_dfs(node.board, otherPlayer, depth_left - 1, accum);
+	}
+}
+
+PerftResults perft(int depth)
+{
+	PerftResults accum;
+	perft_dfs(Utils::get_start_position(), Player::White, depth, accum);
+	return accum;
 }
 
 TEST(MoveGen, Perft)
 {
-	auto perft0 = std::vector<Board>{ Utils::get_start_position() };
-	auto perft1 = perft_inc(perft0, Player::White);
-	auto perft2 = perft_inc(perft1, Player::Black);
-	auto perft3 = perft_inc(perft2, Player::White);
-	auto perft4 = perft_inc(perft3, Player::Black);
-	auto perft5 = perft_inc(perft4, Player::White);
-	EXPECT_EQ(perft1.size(), 20);
-	EXPECT_EQ(perft2.size(), 400);
-	EXPECT_EQ(perft3.size(), 8902);
-	EXPECT_EQ(perft4.size(), 197281);
-	EXPECT_EQ(perft5.size(), 4865609);
-	//EXPECT_EQ(perft6.size(), 119060324);
+	std::vector<PerftResults> perft_results;
+	perft_results.emplace_back(); // dummy node for perft(0)
+	for (int i = 1; i <= 5; i++)
+		perft_results.push_back(perft(i));
+
+	EXPECT_EQ(perft_results[1].nodes, 20);
+	EXPECT_EQ(perft_results[2].nodes, 400);
+	EXPECT_EQ(perft_results[3].nodes, 8902);
+	EXPECT_EQ(perft_results[4].nodes, 197281);
+	EXPECT_EQ(perft_results[5].nodes, 4865609);
+	//EXPECT_EQ(perft_results[6].nodes, 119060324);
+
+	EXPECT_EQ(perft_results[1].captures, 0);
+	EXPECT_EQ(perft_results[2].captures, 0);
+	EXPECT_EQ(perft_results[3].captures, 34);
+	EXPECT_EQ(perft_results[4].captures, 1576);
+	EXPECT_EQ(perft_results[5].captures, 82719);
+	//EXPECT_EQ(perft_results[6].captures, 2812008);
+
+	EXPECT_EQ(perft_results[1].en_passants, 0);
+	EXPECT_EQ(perft_results[2].en_passants, 0);
+	EXPECT_EQ(perft_results[3].en_passants, 0);
+	EXPECT_EQ(perft_results[4].en_passants, 0);
+	EXPECT_EQ(perft_results[5].en_passants, 258);
+	//EXPECT_EQ(perft_results[6].en_passants, 5248);
 }
 
 TEST(MoveGen, Moves)
@@ -41,7 +84,7 @@ TEST(MoveGen, Moves)
 		Board b = Utils::get_blank_board();
 		b.sq[SquareName::C3] = Piece::WhitePawn;
 
-		std::vector<Board> results;
+		std::vector<MoveGenResult> results;
 		move_gen(b, Player::White, results);
 
 		EXPECT_EQ(results.size(), 1);
@@ -51,7 +94,7 @@ TEST(MoveGen, Moves)
 		b.sq[SquareName::C3] = Piece::WhitePawn;
 		b.sq[SquareName::D4] = Piece::BlackPawn;
 
-		std::vector<Board> results;
+		std::vector<MoveGenResult> results;
 		move_gen(b, Player::White, results);
 
 		EXPECT_EQ(results.size(), 2);
@@ -60,7 +103,7 @@ TEST(MoveGen, Moves)
 		Board b = Utils::get_blank_board();
 		b.sq[SquareName::C3] = Piece::WhiteKnight;
 
-		std::vector<Board> results;
+		std::vector<MoveGenResult> results;
 		move_gen(b, Player::White, results);
 
 		EXPECT_EQ(results.size(), 8);
@@ -69,7 +112,7 @@ TEST(MoveGen, Moves)
 		Board b = Utils::get_blank_board();
 		b.sq[SquareName::C3] = Piece::WhiteRook;
 
-		std::vector<Board> results;
+		std::vector<MoveGenResult> results;
 		move_gen(b, Player::White, results);
 
 		EXPECT_EQ(results.size(), 14);
@@ -79,7 +122,7 @@ TEST(MoveGen, Moves)
 		b.sq[SquareName::C3] = Piece::WhiteRook;
 		b.sq[SquareName::D3] = Piece::BlackPawn;
 
-		std::vector<Board> results;
+		std::vector<MoveGenResult> results;
 		move_gen(b, Player::White, results);
 
 		EXPECT_EQ(results.size(), 10);
@@ -89,7 +132,7 @@ TEST(MoveGen, Moves)
 		b.sq[SquareName::C3] = Piece::WhiteRook;
 		b.sq[SquareName::D3] = Piece::WhitePawn;
 
-		std::vector<Board> results;
+		std::vector<MoveGenResult> results;
 		move_gen(b, Player::White, results);
 
 		EXPECT_EQ(results.size(), 10);

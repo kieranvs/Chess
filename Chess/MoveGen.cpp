@@ -30,39 +30,45 @@ const bool OffsetMoveSlides[7] = { false, false, true, false, true, true, false 
 
 bool is_in_check(const Board& board, Player player);
 
-void move_gen(const Board& board, Player playerToMove, std::vector<Board>& output)
+void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult>& output)
 {
 	Player otherPlayer = playerToMove == Player::White ? Player::Black : Player::White;
 
 	auto make_move = [&board, &output, &playerToMove](int from, int to)
 	{
-		Board newboard = board;
-		newboard.sq[from] = Piece::None;
-		newboard.sq[to] = board.sq[from];
-		newboard.en_passant_target = 0;
-		if (!is_in_check(newboard, playerToMove))
-			output.push_back(newboard);
+		MoveGenResult node;
+		node.board = board;
+		node.board.sq[from] = Piece::None;
+		node.board.sq[to] = board.sq[from];
+		node.board.en_passant_target = 0;
+		node.move_type = board.sq[to] == Piece::None ? MoveType::Move : MoveType::Capture;
+		if (!is_in_check(node.board, playerToMove))
+			output.push_back(node);
 	};
 
 	auto make_move_special_2p = [&board, &output, &playerToMove](int from, int to, int en_passant_target)
 	{
-		Board newboard = board;
-		newboard.sq[from] = Piece::None;
-		newboard.sq[to] = board.sq[from];
-		newboard.en_passant_target = en_passant_target;
-		if (!is_in_check(newboard, playerToMove))
-			output.push_back(newboard);
+		MoveGenResult node;
+		node.board = board;
+		node.board.sq[from] = Piece::None;
+		node.board.sq[to] = board.sq[from];
+		node.board.en_passant_target = en_passant_target;
+		node.move_type = MoveType::Move;
+		if (!is_in_check(node.board, playerToMove))
+			output.push_back(node);
 	};
 
 	auto make_move_special_ep = [&board, &output, &playerToMove](int from, int to, int capture)
 	{
-		Board newboard = board;
-		newboard.sq[from] = Piece::None;
-		newboard.sq[to] = board.sq[from];
-		newboard.sq[capture] = Piece::None;
-		newboard.en_passant_target = 0;
-		if (!is_in_check(newboard, playerToMove))
-			output.push_back(newboard);
+		MoveGenResult node;
+		node.board = board;
+		node.board.sq[from] = Piece::None;
+		node.board.sq[to] = board.sq[from];
+		node.board.sq[capture] = Piece::None;
+		node.board.en_passant_target = 0;
+		node.move_type = MoveType::CaptureEnPassant;
+		if (!is_in_check(node.board, playerToMove))
+			output.push_back(node);
 	};
 
 	int pawnDir = playerToMove == Player::White ? 1 : -1;
