@@ -135,47 +135,76 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 	}
 }
 
+const int KnightOffsets[] =
+{
+	-21, -19,-12, -8, 8, 12, 19, 21
+};
+
+const int KingCheckOffsetsSlide[] =
+{
+	-11, -10, -9, -1, 1, 9, 10, 11
+};
+
+const bool KingCheckOffsetsSlideIsDiagonal[] =
+{
+	true, false, true, false, false, true, false, true
+};
+
 bool is_in_check(const Board& board, Player player)
 {
 	auto checkKing = player == Player::White ? Piece::WhiteKing : Piece::BlackKing;
 	auto otherPlayer = player == Player::White ? Player::Black : Player::White;
+	auto enemyPawn = otherPlayer == Player::White ? Piece::WhitePawn : Piece::BlackPawn;
+	auto enemyKnight = otherPlayer == Player::White ? Piece::WhiteKnight : Piece::BlackKnight;
+	auto enemyQueen = otherPlayer == Player::White ? Piece::WhiteQueen : Piece::BlackQueen;
+	auto enemyKing = otherPlayer == Player::White ? Piece::WhiteKing : Piece::BlackKing;
 
 	int pawnDir = otherPlayer == Player::White ? 1 : -1;
-	for (int i = 0; i < 120; i++)
+	for (int kingPos = 0; kingPos < 120; kingPos++)
 	{
-		if (board.isPlayer(i, otherPlayer))
+		if (board.sq[kingPos] == checkKing)
 		{
-			if (board.isPawn(i))
-			{
-				// Attack
-				int leftAttackSq = moveLeft(moveUp(i, pawnDir), 1);
-				if (board.sq[leftAttackSq] == checkKing)
-					return true;
+			//Pawns
+			int leftAttackSq = moveLeft(moveUp(kingPos, -pawnDir), 1);
+			if (board.sq[leftAttackSq] == enemyPawn)
+				return true;
 
-				int rightAttackSq = moveRight(moveUp(i, pawnDir), 1);
-				if (board.sq[rightAttackSq] == checkKing)
+			int rightAttackSq = moveRight(moveUp(kingPos, -pawnDir), 1);
+			if (board.sq[rightAttackSq] == enemyPawn)
+				return true;
+
+			//Knights
+			for (int koi = 0; koi < 8; koi++)
+			{
+				if (board.sq[kingPos + KnightOffsets[koi]] == enemyKnight)
 					return true;
 			}
-			else // Not pawns
+
+			//King
+			for (int kco = 0; kco < 8; kco++)
 			{
-				auto piece_type = board.sq[i] & PieceTypeMask;
-				for (int offsetTableIndex = 0; offsetTableIndex < 8; offsetTableIndex++)
+				if (board.sq[kingPos + KingCheckOffsetsSlide[kco]] == enemyKing)
+					return true;
+			}
+
+			//Others
+			for (int kco = 0; kco < 8; kco++)
+			{
+				auto enemyExtra = otherPlayer == Player::White ? (KingCheckOffsetsSlideIsDiagonal[kco] ? Piece::WhiteBishop : Piece::WhiteRook)
+															   : (KingCheckOffsetsSlideIsDiagonal[kco] ? Piece::BlackBishop : Piece::BlackRook);
+				int curSq = kingPos;
+				while (true)
 				{
-					int curSq = i;
-					while (true)
-					{
-						curSq += OffsetMoveByPiece[piece_type][offsetTableIndex];
-						if (!board.isFree(curSq))
-						{
-							if (board.sq[curSq] == checkKing)
-								return true;
-							break;
-						}
-						if (!OffsetMoveSlides[piece_type])
-							break;
-					}
+					curSq += KingCheckOffsetsSlide[kco];
+					auto curSqP = board.sq[curSq];
+					if (curSqP == enemyQueen || curSqP == enemyExtra)
+						return true;
+					if (curSqP != Piece::None)
+						break;
 				}
 			}
+
+			return false;
 		}
 	}
 
