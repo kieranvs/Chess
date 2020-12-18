@@ -51,3 +51,36 @@ Board Utils::get_blank_board()
 
 	return b;
 }
+
+const char* get_piece_disp(uint8_t piece)
+{
+	if (piece == Piece::WhitePawn) return "P";
+	if (piece == Piece::WhiteRook) return "R";
+	if (piece == Piece::WhiteKnight) return "N";
+	if (piece == Piece::WhiteBishop) return "B";
+	if (piece == Piece::WhiteQueen) return "Q";
+	if (piece == Piece::WhiteKing) return "K";
+	if (piece == Piece::BlackPawn) return "p";
+	if (piece == Piece::BlackRook) return "r";
+	if (piece == Piece::BlackKnight) return "n";
+	if (piece == Piece::BlackBishop) return "b";
+	if (piece == Piece::BlackQueen) return "q";
+	if (piece == Piece::BlackKing) return "k";
+	if (piece == Piece::None) return ".";
+	return "?";
+}
+
+void Utils::print_board(const Board& board)
+{
+	printf("\n----------------\n");
+	for (int row = 7; row >= 0; row--)
+	{
+		for (int col = 0; col < 8; col++)
+		{
+			auto piece = board.sq[mailbox64[row*8 + col]];
+			printf("%s ", get_piece_disp(piece));
+		}
+		printf("\n");
+	}
+	printf("----------------\n\n");
+}

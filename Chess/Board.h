@@ -68,17 +68,21 @@ constexpr int mailbox64[64] =
     91, 92, 93, 94, 95, 96, 97, 98
 };
 
+#define SqN(name, i) static constexpr int name = mailbox64[i];
+
 struct SquareName
 {
-	static constexpr int A1 = mailbox64[0];
-	static constexpr int B1 = mailbox64[8];
-	static constexpr int C1 = mailbox64[16];
-	static constexpr int C2 = mailbox64[17];
-	static constexpr int C3 = mailbox64[18];
-	static constexpr int C4 = mailbox64[19];
-	static constexpr int D3 = mailbox64[26];
-	static constexpr int D4 = mailbox64[27];
+	SqN(A1,  0); SqN(A2,  1); SqN(A3,  2); SqN(A4,  3); SqN(A5,  4); SqN(A6,  5); SqN(A7,  6); SqN(A8,  7);
+	SqN(B1,  8); SqN(B2,  9); SqN(B3, 10); SqN(B4, 11); SqN(B5, 12); SqN(B6, 13); SqN(B7, 14); SqN(B8, 15);
+	SqN(C1, 16); SqN(C2, 17); SqN(C3, 18); SqN(C4, 19); SqN(C5, 20); SqN(C6, 21); SqN(C7, 22); SqN(C8, 23);
+	SqN(D1, 24); SqN(D2, 25); SqN(D3, 26); SqN(D4, 27); SqN(D5, 28); SqN(D6, 29); SqN(D7, 30); SqN(D8, 31);
+	SqN(E1, 32); SqN(E2, 33); SqN(E3, 34); SqN(E4, 35); SqN(E5, 36); SqN(E6, 37); SqN(E7, 38); SqN(E8, 39);
+	SqN(F1, 40); SqN(F2, 41); SqN(F3, 42); SqN(F4, 43); SqN(F5, 44); SqN(F6, 45); SqN(F7, 46); SqN(F8, 47);
+	SqN(G1, 48); SqN(G2, 49); SqN(G3, 50); SqN(G4, 51); SqN(G5, 52); SqN(G6, 53); SqN(G7, 54); SqN(G8, 55);
+	SqN(H1, 56); SqN(H2, 57); SqN(H3, 58); SqN(H4, 59); SqN(H5, 60); SqN(H6, 61); SqN(H7, 62); SqN(H8, 63);
 };
+
+#undef SqN
 
 struct Board
 {
@@ -93,3 +97,4 @@ struct Board
 	bool isPawn(int i) const { return (sq[i] & PieceTypeMask) == PieceTypePawn; }
 	int rankOf(int i) const { return (i / 10) - 2 + 1; }
 };
+ 

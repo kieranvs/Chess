@@ -6,4 +6,5 @@ namespace Utils
 {
 	Board get_start_position();
 	Board get_blank_board();
+	void print_board(const Board& board);
 }

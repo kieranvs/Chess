@@ -12,7 +12,9 @@ add_subdirectory(dependencies/googletest)
 # ======== Chess ========
 add_library(
 	Chess
+	Chess/Eval.cpp
 	Chess/MoveGen.cpp
+	Chess/Search.cpp
 	Chess/Utils.cpp
 )
 target_include_directories(Chess PRIVATE . dependencies)
@@ -21,6 +23,7 @@ target_include_directories(Chess PRIVATE . dependencies)
 add_executable(
 	UnitTest
 	Tests/TestMoveGen.cpp
+	Tests/TestSearch.cpp
 	Tests/UnitTestMain.cpp
 )
 target_include_directories(UnitTest PRIVATE . dependencies)
