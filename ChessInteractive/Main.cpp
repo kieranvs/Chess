@@ -61,8 +61,13 @@ public:
 
 			for (int i = 0; i < results.size(); i++)
 			{
-				printf("%d/%d", i + 1, (int)results.size());
-				Utils::print_board(results[i].board);
+				printf("%d. %s%s->%s %s\n",
+					i + 1,
+					i < 9 ? " " : "",
+					Utils::get_square_name(results[i].sq_from),
+					Utils::get_square_name(results[i].sq_to),
+					results[i].move_type == MoveType::Move ? "" : "capture"
+				);
 			}
 		}
 		else if (args[0] == "perft")
