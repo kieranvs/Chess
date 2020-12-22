@@ -1,5 +1,7 @@
 #include "Utils.h"
 
+#include "MoveGen.h"
+
 #include <iostream>
 
 Board Utils::get_start_position()
@@ -83,4 +85,40 @@ void Utils::print_board(const Board& board)
 		printf("\n");
 	}
 	printf("----------------\n\n");
+}
+
+const char* Utils::get_player_name(Player p)
+{
+	return p == Player::White ? "White" : "Black";
+}
+
+void perft_dfs(const Board& board, Player p, int depth_left, PerftResults& accum)
+{
+	Player otherPlayer = p == Player::White ? Player::Black : Player::White;
+	std::vector<MoveGenResult> results;
+	move_gen(board, p, results);
+
+	if (depth_left == 1)
+	{
+		for (const auto& node : results)
+		{
+			accum.nodes += 1;
+			if (node.move_type == MoveType::Capture || node.move_type == MoveType::CaptureEnPassant)
+				accum.captures += 1;
+			if (node.move_type == MoveType::CaptureEnPassant)
+				accum.en_passants += 1;
+		}
+	}
+	else
+	{
+		for (const auto& node : results)
+			perft_dfs(node.board, otherPlayer, depth_left - 1, accum);
+	}
+}
+
+PerftResults Utils::perft(const Board& b, Player p, int depth)
+{
+	PerftResults accum;
+	perft_dfs(b, p, depth, accum);
+	return accum;
 }

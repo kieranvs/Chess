@@ -11,50 +11,12 @@ TEST(Board, BoardFunctions)
 	EXPECT_TRUE(init_position.isPawn(SquareName::B1));
 }
 
-struct PerftResults
-{
-	int nodes = 0;
-	int captures = 0;
-	int en_passants = 0;
-};
-
-void perft_dfs(const Board& board, Player p, int depth_left, PerftResults& accum)
-{
-	Player otherPlayer = p == Player::White ? Player::Black : Player::White;
-	std::vector<MoveGenResult> results;
-	move_gen(board, p, results);
-
-	if (depth_left == 1)
-	{
-		for (const auto& node : results)
-		{
-			accum.nodes += 1;
-			if (node.move_type == MoveType::Capture || node.move_type == MoveType::CaptureEnPassant)
-				accum.captures += 1;
-			if (node.move_type == MoveType::CaptureEnPassant)
-				accum.en_passants += 1;
-		}
-	}
-	else
-	{
-		for (const auto& node : results)
-			perft_dfs(node.board, otherPlayer, depth_left - 1, accum);
-	}
-}
-
-PerftResults perft(int depth)
-{
-	PerftResults accum;
-	perft_dfs(Utils::get_start_position(), Player::White, depth, accum);
-	return accum;
-}
-
 TEST(MoveGen, Perft)
 {
 	std::vector<PerftResults> perft_results;
 	perft_results.emplace_back(); // dummy node for perft(0)
 	for (int i = 1; i <= 5; i++)
-		perft_results.push_back(perft(i));
+		perft_results.push_back(Utils::perft(Utils::get_start_position(), Player::White, i));
 
 	EXPECT_EQ(perft_results[1].nodes, 20);
 	EXPECT_EQ(perft_results[2].nodes, 400);
