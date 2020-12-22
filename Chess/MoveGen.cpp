@@ -43,6 +43,8 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 		node.board.sq[to] = board.sq[from];
 		node.board.en_passant_target = 0;
 		node.move_type = board.sq[to] == Piece::None ? MoveType::Move : MoveType::Capture;
+		node.sq_from = from;
+		node.sq_to = to;
 		if (!is_in_check(node.board, playerToMove))
 			output.push_back(node);
 	};
@@ -55,6 +57,8 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 		node.board.sq[to] = board.sq[from];
 		node.board.en_passant_target = en_passant_target;
 		node.move_type = MoveType::Move;
+		node.sq_from = from;
+		node.sq_to = to;
 		if (!is_in_check(node.board, playerToMove))
 			output.push_back(node);
 	};
@@ -68,6 +72,8 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 		node.board.sq[capture] = Piece::None;
 		node.board.en_passant_target = 0;
 		node.move_type = MoveType::CaptureEnPassant;
+		node.sq_from = from;
+		node.sq_to = to;
 		if (!is_in_check(node.board, playerToMove))
 			output.push_back(node);
 	};

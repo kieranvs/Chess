@@ -96,7 +96,7 @@ public:
 				depth = std::stoi(args[1]);
 
 			auto sr = search(current_board, player_to_move, depth, true);
-			printf("d=%d, score=%f\n", depth, sr.score);
+			printf("d=%d, score=%f, %s->%s\n", depth, sr.score, Utils::get_square_name(sr.move.sq_from), Utils::get_square_name(sr.move.sq_to));
 
 			undo_stack.push_back(current_board);
 			current_board = sr.next;

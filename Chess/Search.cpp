@@ -1,6 +1,5 @@
 #include "Search.h"
 #include "Eval.h"
-#include "MoveGen.h"
 #include "Utils.h"
 
 #include <vector>
@@ -93,6 +92,7 @@ SearchResult search(const Board& board, Player playerToMove, int search_depth, b
 	SearchResult sr;
 	sr.next = best_result->board;
 	sr.score = *best_score;
+	sr.move = *best_result;
 
 	return sr;
 }

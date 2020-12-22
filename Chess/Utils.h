@@ -14,6 +14,7 @@ namespace Utils
 	Board get_start_position();
 	Board get_blank_board();
 	void print_board(const Board& board);
+	const char* get_square_name(int sq);
 
 	const char* get_player_name(Player p);
 	inline Player opposite_player(Player p)
