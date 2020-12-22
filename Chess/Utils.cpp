@@ -94,7 +94,7 @@ const char* Utils::get_player_name(Player p)
 
 void perft_dfs(const Board& board, Player p, int depth_left, PerftResults& accum)
 {
-	Player otherPlayer = p == Player::White ? Player::Black : Player::White;
+	Player otherPlayer = Utils::opposite_player(p);
 	std::vector<MoveGenResult> results;
 	move_gen(board, p, results);
 

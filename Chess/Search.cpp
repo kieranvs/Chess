@@ -8,7 +8,7 @@
 
 SearchResult search(const Board& board, Player playerToMove, int search_depth, bool use_alpha_beta, double alpha_score, double beta_score)
 {
-	Player otherPlayer = playerToMove == Player::White ? Player::Black : Player::White;
+	Player otherPlayer = Utils::opposite_player(playerToMove);
 	std::vector<MoveGenResult> results;
 	move_gen(board, playerToMove, results);
 

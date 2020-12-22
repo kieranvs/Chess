@@ -3,6 +3,7 @@
 #include <string>
 
 #include <Chess/MoveGen.h>
+#include <Chess/Search.h>
 #include <Chess/Utils.h>
 
 std::vector<std::string> split_args(const std::string &text, char sep)
@@ -36,8 +37,10 @@ public:
 
 	void print_command_list()
 	{
+		printf("e : engine move\n");
 		printf("m : move list\n");
 		printf("p : perft, args: depth\n");
+		printf("u : undo\n");
 		printf("q : Quit\n");
 		printf("\n> ");
 	}
@@ -45,7 +48,7 @@ public:
 	void execute_command(const std::string& command)
 	{
 		auto args = split_args(command, ' ');
-		if (args.empty())
+		if (args.empty() || (args.size() == 1 && args[0] == ""))
 			return;
 
 		if (args[0] == "q")
@@ -83,6 +86,31 @@ public:
 			printf("Nodes: %d\n", pr.nodes);
 			printf("Captures: %d\n", pr.captures);
 			printf("En Passants: %d\n", pr.en_passants);
+		}
+		else if (args[0] == "e")
+		{
+			int depth = 5;
+
+			if (args.size() == 2)
+				depth = std::stoi(args[1]);
+
+			auto sr = search(current_board, player_to_move, depth, true);
+			printf("d=%d, score=%f\n", depth, sr.score);
+
+			undo_stack.push_back(current_board);
+			current_board = sr.next;
+			player_to_move = Utils::opposite_player(player_to_move);
+		}
+		else if (args[0] == "u")
+		{
+			if (undo_stack.empty())
+			{
+				printf("Nothing to undo\n");
+				return;
+			}
+			current_board = undo_stack.back();
+			undo_stack.pop_back();
+			player_to_move = Utils::opposite_player(player_to_move);
 		}
 		else
 			std::cout << "Unknown command: " << command << std::endl;

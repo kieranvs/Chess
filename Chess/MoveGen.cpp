@@ -1,4 +1,5 @@
 #include "MoveGen.h"
+#include "Utils.h"
 
 int moveUp(int i, int amount)
 {
@@ -32,7 +33,7 @@ bool is_in_check(const Board& board, Player player);
 
 void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult>& output)
 {
-	Player otherPlayer = playerToMove == Player::White ? Player::Black : Player::White;
+	Player otherPlayer = Utils::opposite_player(playerToMove);
 
 	auto make_move = [&board, &output, &playerToMove](int from, int to)
 	{
