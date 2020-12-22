@@ -38,10 +38,11 @@ public:
 	void print_command_list()
 	{
 		printf("e : engine move\n");
+		printf("p : player move\n");
 		printf("m : move list\n");
-		printf("p : perft, args: depth\n");
 		printf("u : undo\n");
 		printf("q : Quit\n");
+		printf("perft : perft, args: depth\n");
 		printf("\n> ");
 	}
 
@@ -64,11 +65,11 @@ public:
 				Utils::print_board(results[i].board);
 			}
 		}
-		else if (args[0] == "p")
+		else if (args[0] == "perft")
 		{
 			if (args.size() != 2)
 			{
-				printf("Usage: p <depth>\n");
+				printf("Usage: perft <depth>\n");
 				return;
 			}
 
@@ -110,6 +111,30 @@ public:
 			}
 			current_board = undo_stack.back();
 			undo_stack.pop_back();
+			player_to_move = Utils::opposite_player(player_to_move);
+		}
+		else if (args[0] == "p")
+		{
+			if (args.size() != 3 || args[1].size() != 2 || args[2].size() != 2)
+			{
+				printf("Usage: p <from> <to>\n");
+				return;
+			}
+
+			int fromFile = tolower(args[1][0]) - 'a';
+			int fromRank = tolower(args[1][1]) - '1';
+			int toFile = tolower(args[2][0]) - 'a';
+			int toRank = tolower(args[2][1]) - '1';
+
+			int fromSq = mailbox64[fromRank * 8 + fromFile];
+			int toSq = mailbox64[toRank * 8 + toFile];
+
+			Board new_board = current_board;
+			new_board.sq[fromSq] = Piece::None;
+			new_board.sq[toSq] = current_board.sq[fromSq];
+
+			undo_stack.push_back(current_board);
+			current_board = new_board;
 			player_to_move = Utils::opposite_player(player_to_move);
 		}
 		else
