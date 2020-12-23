@@ -54,6 +54,80 @@ Board Utils::get_blank_board()
 	return b;
 }
 
+Board Utils::get_board_from_fen(const std::string& fen)
+{
+	Board b = get_blank_board();
+
+	int fen_rank = 0;
+	int file = 0;
+	int fen_addr = 0;
+
+	auto putPiece = [&fen_rank, &file, &b](uint8_t piece)
+	{
+		b.sq[mailbox64[(7 - fen_rank) * 8 + file]] = piece;
+		file += 1;
+	};
+
+	while (true)
+	{
+		if (fen_addr >= fen.size())
+		{
+			printf("Invalid fen: read past end\n");
+			exit(0);
+		}
+		char c = fen[fen_addr];
+		fen_addr += 1;
+		if (c >= '1' && c <= '8')
+		{
+			int num_blanks = c - '0';
+			file += num_blanks;
+		}
+		else if (c == '/')
+		{
+			if (file == 8)
+			{
+				file = 0;
+				fen_rank += 1;
+			}
+			else
+			{
+				printf("Invalid fen: unexpected /\n");
+				exit(0);
+			}
+		}
+		else if (c == ' ')
+		{
+			if (file == 8 && fen_rank == 7)
+			{
+				return b;
+			}
+			else
+			{
+				printf("Invalid fen: unexpected space\n");
+				printf("file=%d\nfen_rank=%d\n", file, fen_rank);
+				exit(0);
+			}
+		}
+		else if (c == 'P') putPiece(Piece::WhitePawn);
+		else if (c == 'R') putPiece(Piece::WhiteRook);
+		else if (c == 'N') putPiece(Piece::WhiteKnight);
+		else if (c == 'B') putPiece(Piece::WhiteBishop);
+		else if (c == 'Q') putPiece(Piece::WhiteQueen);
+		else if (c == 'K') putPiece(Piece::WhiteKing);
+		else if (c == 'p') putPiece(Piece::BlackPawn);
+		else if (c == 'r') putPiece(Piece::BlackRook);
+		else if (c == 'n') putPiece(Piece::BlackKnight);
+		else if (c == 'b') putPiece(Piece::BlackBishop);
+		else if (c == 'q') putPiece(Piece::BlackQueen);
+		else if (c == 'k') putPiece(Piece::BlackKing);
+		else
+		{
+			printf("Invalid fen: unexpected char %c\n", c);
+			exit(0);
+		}
+	}
+}
+
 const char* get_piece_disp(uint8_t piece)
 {
 	if (piece == Piece::WhitePawn) return "P";

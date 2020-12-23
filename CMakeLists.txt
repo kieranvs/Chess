@@ -32,6 +32,7 @@ add_executable(
 	UnitTest
 	Tests/TestMoveGen.cpp
 	Tests/TestSearch.cpp
+	Tests/TestUtils.cpp
 	Tests/UnitTestMain.cpp
 )
 target_include_directories(UnitTest PRIVATE . dependencies)

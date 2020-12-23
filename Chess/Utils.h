@@ -2,6 +2,8 @@
 
 #include "Board.h"
 
+#include <string>
+
 struct PerftResults
 {
 	int nodes = 0;
@@ -13,6 +15,7 @@ namespace Utils
 {
 	Board get_start_position();
 	Board get_blank_board();
+	Board get_board_from_fen(const std::string& fen);
 	void print_board(const Board& board);
 	const char* get_square_name(int sq);
 

@@ -42,6 +42,7 @@ public:
 		printf("m : move list\n");
 		printf("u : undo\n");
 		printf("q : Quit\n");
+		printf("fen : load from fen, args: fen\n");
 		printf("perft : perft, args: depth\n");
 		printf("\n> ");
 	}
@@ -141,6 +142,20 @@ public:
 			undo_stack.push_back(current_board);
 			current_board = new_board;
 			player_to_move = Utils::opposite_player(player_to_move);
+		}
+		else if (args[0] == "fen")
+		{
+			if (args.size() == 1)
+			{
+				printf("Usage: fen <fen>\n");
+				return;
+			}
+
+			auto fen = command.substr(4);
+
+			Board new_board = Utils::get_board_from_fen(fen);
+			undo_stack.push_back(current_board);
+			current_board = new_board;
 		}
 		else
 			std::cout << "Unknown command: " << command << std::endl;
