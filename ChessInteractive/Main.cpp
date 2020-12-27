@@ -38,6 +38,7 @@ public:
 	void print_command_list()
 	{
 		printf("e : engine move\n");
+		printf("ep : engine move (preview)\n");
 		printf("p : player move\n");
 		printf("m : move list\n");
 		printf("u : undo\n");
@@ -107,6 +108,16 @@ public:
 			undo_stack.push_back(current_board);
 			current_board = sr.next;
 			player_to_move = Utils::opposite_player(player_to_move);
+		}
+		else if (args[0] == "ep")
+		{
+			int depth = 5;
+
+			if (args.size() == 2)
+				depth = std::stoi(args[1]);
+
+			auto sr = search(current_board, player_to_move, depth, true);
+			printf("d=%d, score=%f, %s->%s\n", depth, sr.score, Utils::get_square_name(sr.move.sq_from), Utils::get_square_name(sr.move.sq_to));
 		}
 		else if (args[0] == "u")
 		{
