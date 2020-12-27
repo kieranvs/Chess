@@ -67,6 +67,34 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 			output.push_back(node);
 	};
 
+	auto make_move_special_promotion = [&board, &output, &playerToMove, &update_castle_rights](int from, int to)
+	{
+		MoveGenResult node;
+		node.board = board;
+		node.board.sq[from] = Piece::None;
+		node.board.en_passant_target = 0;
+		update_castle_rights(node.board, from, to);
+		node.move_type = board.sq[to] == Piece::None ? MoveType::Promotion : MoveType::CapturePromotion;
+		node.sq_from = from;
+		node.sq_to = to;
+
+		node.board.sq[to] = playerToMove == Player::White ? Piece::WhiteQueen : Piece::BlackQueen;
+		if (!is_in_check(node.board, playerToMove))
+			output.push_back(node);
+
+		node.board.sq[to] = playerToMove == Player::White ? Piece::WhiteRook : Piece::BlackRook;
+		if (!is_in_check(node.board, playerToMove))
+			output.push_back(node);
+
+		node.board.sq[to] = playerToMove == Player::White ? Piece::WhiteBishop : Piece::BlackBishop;
+		if (!is_in_check(node.board, playerToMove))
+			output.push_back(node);
+
+		node.board.sq[to] = playerToMove == Player::White ? Piece::WhiteKnight : Piece::BlackKnight;
+		if (!is_in_check(node.board, playerToMove))
+			output.push_back(node);
+	};
+
 	auto make_move_special_2p = [&board, &output, &playerToMove](int from, int to, int en_passant_target)
 	{
 		MoveGenResult node;
@@ -125,6 +153,7 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 
 	int pawnDir = playerToMove == Player::White ? 1 : -1;
 	int pawnDoubleMoveRank = playerToMove == Player::White ? 2 : 7;
+	int pawnPromotionRank = playerToMove == Player::White ? 7 : 2;
 	uint8_t CastleRightsPlayer = playerToMove == Player::White ? CastleRightsWhite : CastleRightsBlack;
 	for (int i = 0; i < 120; i++)
 	{
@@ -132,27 +161,45 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 		{
 			if (board.isPawn(i))
 			{
-				// Move forward
+				int pawnRank = board.rankOf(i);
+				int leftAttackSq = moveLeft(moveUp(i, pawnDir), 1);
+				int rightAttackSq = moveRight(moveUp(i, pawnDir), 1);
 				int forwardSq = moveUp(i, pawnDir);
-				if (board.isFree(forwardSq))
-					make_move(i, forwardSq);
+
+				if (pawnRank == pawnPromotionRank)
+				{
+					// Move forward
+					if (board.isFree(forwardSq))
+						make_move_special_promotion(i, forwardSq);
+
+					// Attack
+					if (board.isPlayer(leftAttackSq, otherPlayer))
+						make_move_special_promotion(i, leftAttackSq);
+
+					if (board.isPlayer(rightAttackSq, otherPlayer))
+						make_move_special_promotion(i, rightAttackSq);
+				}
+				else
+				{
+					// Move forward
+					if (board.isFree(forwardSq))
+						make_move(i, forwardSq);
+
+					// Attack
+					if (board.isPlayer(leftAttackSq, otherPlayer))
+						make_move(i, leftAttackSq);
+
+					if (board.isPlayer(rightAttackSq, otherPlayer))
+						make_move(i, rightAttackSq);
+				}
 
 				// Move forward two
-				if (board.rankOf(i) == pawnDoubleMoveRank)
+				if (pawnRank == pawnDoubleMoveRank)
 				{
 					int forwardSq2 = moveUp(i, pawnDir * 2);
 					if (board.isFree(forwardSq) && board.isFree(forwardSq2))
 						make_move_special_2p(i, forwardSq2, forwardSq);
 				}
-
-				// Attack
-				int leftAttackSq = moveLeft(moveUp(i, pawnDir), 1);
-				if (board.isPlayer(leftAttackSq, otherPlayer))
-					make_move(i, leftAttackSq);
-
-				int rightAttackSq = moveRight(moveUp(i, pawnDir), 1);
-				if (board.isPlayer(rightAttackSq, otherPlayer))
-					make_move(i, rightAttackSq);
 
 				// En passant attack
 				if (leftAttackSq == board.en_passant_target || rightAttackSq == board.en_passant_target)

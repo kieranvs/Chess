@@ -221,8 +221,12 @@ const char* Utils::get_move_type_as_string(MoveType mt)
 		return "capture";
 	else if (mt == MoveType::CaptureEnPassant)
 		return "capture (ep)";
+	else if (mt == MoveType::CapturePromotion)
+		return "promotion (capture)";
 	else if (mt == MoveType::Castle)
 		return "castle";
+	else if (mt == MoveType::Promotion)
+		return "promotion";
 	else
 		return "?";
 }
@@ -243,12 +247,14 @@ void perft_dfs(const Board& board, Player p, int depth_left, PerftResults& accum
 		for (const auto& node : results)
 		{
 			accum.nodes += 1;
-			if (node.move_type == MoveType::Capture || node.move_type == MoveType::CaptureEnPassant)
+			if (node.move_type == MoveType::Capture || node.move_type == MoveType::CaptureEnPassant || node.move_type == MoveType::CapturePromotion)
 				accum.captures += 1;
 			if (node.move_type == MoveType::CaptureEnPassant)
 				accum.en_passants += 1;
 			if (node.move_type == MoveType::Castle)
 				accum.castles += 1;
+			if (node.move_type == MoveType::Promotion || node.move_type == MoveType::CapturePromotion)
+				accum.promotions += 1;
 		}
 	}
 	else

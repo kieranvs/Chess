@@ -11,6 +11,7 @@ struct PerftResults
 	int captures = 0;
 	int en_passants = 0;
 	int castles = 0;
+	int promotions = 0;
 };
 
 namespace Utils

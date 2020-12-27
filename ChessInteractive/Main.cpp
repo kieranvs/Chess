@@ -95,6 +95,7 @@ public:
 			printf("Captures: %d\n", pr.captures);
 			printf("En Passants: %d\n", pr.en_passants);
 			printf("Castles: %d\n", pr.castles);
+			printf("Promotions: %d\n", pr.promotions);
 		}
 		else if (args[0] == "e")
 		{
