@@ -8,7 +8,8 @@ enum class MoveType
 {
 	Move,
 	Capture,
-	CaptureEnPassant
+	CaptureEnPassant,
+	Castle
 };
 
 struct MoveGenResult

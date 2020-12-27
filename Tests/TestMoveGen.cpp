@@ -30,6 +30,13 @@ TEST(MoveGen, Perft_Init)
 	EXPECT_EQ(perft_results[4].en_passants, 0);
 	EXPECT_EQ(perft_results[5].en_passants, 258);
 	EXPECT_EQ(perft_results[6].en_passants, 5248);
+
+	EXPECT_EQ(perft_results[1].castles, 0);
+	EXPECT_EQ(perft_results[2].castles, 0);
+	EXPECT_EQ(perft_results[3].castles, 0);
+	EXPECT_EQ(perft_results[4].castles, 0);
+	EXPECT_EQ(perft_results[5].castles, 0);
+	EXPECT_EQ(perft_results[6].castles, 0);
 }
 
 TEST(MoveGen, Perft_FEN2)
@@ -57,6 +64,12 @@ TEST(MoveGen, Perft_FEN2)
 	EXPECT_EQ(perft_results[3].en_passants, 45);
 	EXPECT_EQ(perft_results[4].en_passants, 1929);
 	EXPECT_EQ(perft_results[5].en_passants, 73365);
+
+	EXPECT_EQ(perft_results[1].castles, 2);
+	EXPECT_EQ(perft_results[2].castles, 91);
+	EXPECT_EQ(perft_results[3].castles, 3162);
+	EXPECT_EQ(perft_results[4].castles, 128013);
+	EXPECT_EQ(perft_results[5].castles, 4993637);
 }
 
 TEST(MoveGen, Perft_FEN3)
@@ -90,6 +103,14 @@ TEST(MoveGen, Perft_FEN3)
 	EXPECT_EQ(perft_results[5].en_passants, 1165);
 	EXPECT_EQ(perft_results[6].en_passants, 33325);
 	EXPECT_EQ(perft_results[7].en_passants, 294874);
+
+	EXPECT_EQ(perft_results[1].castles, 0);
+	EXPECT_EQ(perft_results[2].castles, 0);
+	EXPECT_EQ(perft_results[3].castles, 0);
+	EXPECT_EQ(perft_results[4].castles, 0);
+	EXPECT_EQ(perft_results[5].castles, 0);
+	EXPECT_EQ(perft_results[6].castles, 0);
+	EXPECT_EQ(perft_results[7].castles, 0);
 }
 
 TEST(MoveGen, Perft_FEN4)
@@ -117,6 +138,12 @@ TEST(MoveGen, Perft_FEN4)
 	EXPECT_EQ(perft_results[3].en_passants, 4);
 	EXPECT_EQ(perft_results[4].en_passants, 0);
 	EXPECT_EQ(perft_results[5].en_passants, 6512);
+
+	EXPECT_EQ(perft_results[1].castles, 0);
+	EXPECT_EQ(perft_results[2].castles, 6);
+	EXPECT_EQ(perft_results[3].castles, 0);
+	EXPECT_EQ(perft_results[4].castles, 7795);
+	EXPECT_EQ(perft_results[5].castles, 0);
 }
 
 TEST(MoveGen, Perft_FEN5)

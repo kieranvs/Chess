@@ -84,17 +84,31 @@ struct SquareName
 
 #undef SqN
 
+constexpr uint8_t CastleRightsWhiteKingside = 0x1;
+constexpr uint8_t CastleRightsWhiteQueenside = 0x2;
+constexpr uint8_t CastleRightsWhite = 0x3;
+constexpr uint8_t CastleRightsBlackKingside = 0x4;
+constexpr uint8_t CastleRightsBlackQueenside = 0x8;
+constexpr uint8_t CastleRightsBlack = 0xC;
+constexpr uint8_t CastleRightsAll = 0xF;
+constexpr uint8_t CastleRightsNone = 0x0;
+
 struct Board
 {
 	// va -  -  Bl Wh [Piece]
 	// .  .  .  .  .  .  .  .
 	uint8_t sq[120]; //12 rows x 10 cols
 	int en_passant_target;
+	// - - - - BQ BK WQ WK
+	uint8_t castle_rights;
 
 	bool isValid(int i) const { return sq[i] != Piece::OffBoard; }
 	bool isFree(int i) const { return sq[i] == Piece::None; }
 	bool isPlayer(int i, Player p) const { return (sq[i] & (uint8_t)p) != 0; }
 	bool isPawn(int i) const { return (sq[i] & PieceTypeMask) == PieceTypePawn; }
+	bool isKing(int i) const { return (sq[i] & PieceTypeMask) == PieceTypeKing; }
 	int rankOf(int i) const { return (i / 10) - 2 + 1; }
 };
+
+static_assert(sizeof(Board) == 128);
  

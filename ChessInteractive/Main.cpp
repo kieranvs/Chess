@@ -6,7 +6,7 @@
 #include <Chess/Search.h>
 #include <Chess/Utils.h>
 
-std::vector<std::string> split_args(const std::string &text, char sep)
+static std::vector<std::string> split_args(const std::string &text, char sep)
 {
 	std::vector<std::string> tokens;
 	std::size_t start = 0, end = 0;
@@ -68,7 +68,7 @@ public:
 					i < 9 ? " " : "",
 					Utils::get_square_name(results[i].sq_from),
 					Utils::get_square_name(results[i].sq_to),
-					results[i].move_type == MoveType::Move ? "" : "capture"
+					Utils::get_move_type_as_string(results[i].move_type)
 				);
 			}
 		}
@@ -94,6 +94,7 @@ public:
 			printf("Nodes: %d\n", pr.nodes);
 			printf("Captures: %d\n", pr.captures);
 			printf("En Passants: %d\n", pr.en_passants);
+			printf("Castles: %d\n", pr.castles);
 		}
 		else if (args[0] == "e")
 		{
