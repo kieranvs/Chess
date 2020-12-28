@@ -7,11 +7,11 @@
 enum class MoveType
 {
 	Move,
-	Capture,
-	CaptureEnPassant,
-	CapturePromotion,
 	Castle,
-	Promotion
+	CaptureEnPassant,
+	Capture,
+	Promotion,
+	CapturePromotion
 };
 
 struct MoveGenResult

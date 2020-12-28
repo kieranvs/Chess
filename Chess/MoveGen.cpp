@@ -1,6 +1,8 @@
 #include "MoveGen.h"
 #include "Utils.h"
 
+#include <algorithm>
+
 int moveUp(int i, int amount)
 {
 	return i + (amount * 10);
@@ -262,6 +264,16 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 				}
 			}
 		}
+	}
+
+	constexpr bool sort_moves = true;
+	if (sort_moves)
+	{
+		std::sort(output.begin(), output.end(),
+			[](const MoveGenResult& m1, const MoveGenResult& m2)
+			{
+				return (int)m1.move_type > (int)m2.move_type;
+			});
 	}
 }
 
