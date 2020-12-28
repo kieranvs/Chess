@@ -37,14 +37,14 @@ public:
 
 	void print_command_list()
 	{
-		printf("e : engine move\n");
-		printf("ep : engine move (preview)\n");
-		printf("p : player move\n");
-		printf("m : move list\n");
-		printf("u : undo\n");
-		printf("q : Quit\n");
-		printf("fen : load from fen, args: fen\n");
-		printf("perft : perft, args: depth\n");
+		printf("e [depth]     : engine move\n");
+		printf("ep [depth]    : engine move (preview)\n");
+		printf("p [from] <to> : player move\n");
+		printf("m             : move list\n");
+		printf("u             : undo\n");
+		printf("q             : quit\n");
+		printf("fen <fen>     : load from fen\n");
+		printf("perft <depth> : perft\n");
 		printf("\n> ");
 	}
 
@@ -134,26 +134,79 @@ public:
 		}
 		else if (args[0] == "p")
 		{
-			if (args.size() != 3 || args[1].size() != 2 || args[2].size() != 2)
+			if (args.size() < 2 || args.size() > 3)
 			{
-				printf("Usage: p <from> <to>\n");
+				printf("Usage: p [from] <to>\n");
 				return;
 			}
 
-			int fromFile = tolower(args[1][0]) - 'a';
-			int fromRank = tolower(args[1][1]) - '1';
-			int toFile = tolower(args[2][0]) - 'a';
-			int toRank = tolower(args[2][1]) - '1';
+			std::vector<MoveGenResult> results;
+			move_gen(current_board, player_to_move, results);
+			const MoveGenResult* found = nullptr;
 
-			int fromSq = mailbox64[fromRank * 8 + fromFile];
-			int toSq = mailbox64[toRank * 8 + toFile];
+			if (args.size() == 2)
+			{
+				if (args[1].size() != 2)
+				{
+					printf("Usage: p [from] <to>\n");
+					return;
+				}
 
-			Board new_board = current_board;
-			new_board.sq[fromSq] = Piece::None;
-			new_board.sq[toSq] = current_board.sq[fromSq];
+				int toFile = tolower(args[1][0]) - 'a';
+				int toRank = tolower(args[1][1]) - '1';
+
+				int toSq = mailbox64[toRank * 8 + toFile];
+
+				for (const auto& mgr : results)
+				{
+					if (mgr.sq_to == toSq)
+					{
+						if (found)
+						{
+							printf("Ambiguous move, enter both squares\n");
+							return;
+						}
+						else
+						{
+							found = &mgr;
+						}
+					}
+				}
+			}
+			else if (args.size() == 3)
+			{
+				if (args[1].size() != 2 || args[2].size() != 2)
+				{
+					printf("Usage: p [from] <to>\n");
+					return;
+				}
+
+				int fromFile = tolower(args[1][0]) - 'a';
+				int fromRank = tolower(args[1][1]) - '1';
+				int toFile = tolower(args[2][0]) - 'a';
+				int toRank = tolower(args[2][1]) - '1';
+
+				int fromSq = mailbox64[fromRank * 8 + fromFile];
+				int toSq = mailbox64[toRank * 8 + toFile];
+
+				for (const auto& mgr : results)
+				{
+					if (mgr.sq_to == toSq && mgr.sq_from == fromSq)
+					{
+						found = &mgr;
+						break;
+					}
+				}
+			}
+
+			if (!found)
+			{
+				printf("Move not found!\n");
+				return;
+			}
 
 			undo_stack.push_back(current_board);
-			current_board = new_board;
+			current_board = found->board;
 			player_to_move = Utils::opposite_player(player_to_move);
 		}
 		else if (args[0] == "fen")
