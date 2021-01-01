@@ -30,5 +30,5 @@ namespace Utils
 		return p == Player::White ? Player::Black : Player::White;
 	}
 
-	PerftResults perft(const Board& board, Player p, int depth);
+	PerftResults perft(const Board& board, int depth);
 }

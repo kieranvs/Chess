@@ -22,4 +22,4 @@ struct MoveGenResult
 	int sq_to;
 };
 
-void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult>& output);
+void move_gen(const Board& board, std::vector<MoveGenResult>& output);

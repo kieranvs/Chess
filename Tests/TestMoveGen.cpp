@@ -8,7 +8,7 @@ TEST(MoveGen, Perft_Init)
 	std::vector<PerftResults> perft_results;
 	perft_results.emplace_back(); // dummy node for perft(0)
 	for (int i = 1; i <= 6; i++)
-		perft_results.push_back(Utils::perft(Utils::get_start_position(), Player::White, i));
+		perft_results.push_back(Utils::perft(Utils::get_start_position(), i));
 
 	EXPECT_EQ(perft_results[1].nodes, 20);
 	EXPECT_EQ(perft_results[2].nodes, 400);
@@ -52,7 +52,7 @@ TEST(MoveGen, Perft_FEN2)
 	std::vector<PerftResults> perft_results;
 	perft_results.emplace_back(); // dummy node for perft(0)
 	for (int i = 1; i <= 5; i++)
-		perft_results.push_back(Utils::perft(board, Player::White, i));
+		perft_results.push_back(Utils::perft(board, i));
 
 	EXPECT_EQ(perft_results[1].nodes, 48);
 	EXPECT_EQ(perft_results[2].nodes, 2039);
@@ -91,7 +91,7 @@ TEST(MoveGen, Perft_FEN3)
 	std::vector<PerftResults> perft_results;
 	perft_results.emplace_back(); // dummy node for perft(0)
 	for (int i = 1; i <= 7; i++)
-		perft_results.push_back(Utils::perft(board, Player::White, i));
+		perft_results.push_back(Utils::perft(board, i));
 
 	EXPECT_EQ(perft_results[1].nodes, 14);
 	EXPECT_EQ(perft_results[2].nodes, 191);
@@ -140,7 +140,7 @@ TEST(MoveGen, Perft_FEN4)
 	std::vector<PerftResults> perft_results;
 	perft_results.emplace_back(); // dummy node for perft(0)
 	for (int i = 1; i <= 5; i++)
-		perft_results.push_back(Utils::perft(board, Player::White, i));
+		perft_results.push_back(Utils::perft(board, i));
 
 	EXPECT_EQ(perft_results[1].nodes, 6);
 	EXPECT_EQ(perft_results[2].nodes, 264);
@@ -179,7 +179,7 @@ TEST(MoveGen, Perft_FEN5)
 	std::vector<PerftResults> perft_results;
 	perft_results.emplace_back(); // dummy node for perft(0)
 	for (int i = 1; i <= 5; i++)
-		perft_results.push_back(Utils::perft(board, Player::White, i));
+		perft_results.push_back(Utils::perft(board, i));
 
 	EXPECT_EQ(perft_results[1].nodes, 44);
 	EXPECT_EQ(perft_results[2].nodes, 1486);
@@ -194,7 +194,7 @@ TEST(MoveGen, Perft_FEN6)
 	std::vector<PerftResults> perft_results;
 	perft_results.emplace_back(); // dummy node for perft(0)
 	for (int i = 1; i <= 5; i++)
-		perft_results.push_back(Utils::perft(board, Player::White, i));
+		perft_results.push_back(Utils::perft(board, i));
 	
 	EXPECT_EQ(perft_results[1].nodes, 46);
 	EXPECT_EQ(perft_results[2].nodes, 2079);
@@ -210,7 +210,7 @@ TEST(MoveGen, Moves)
 		b.sq[SquareName::C3] = Piece::WhitePawn;
 
 		std::vector<MoveGenResult> results;
-		move_gen(b, Player::White, results);
+		move_gen(b, results);
 
 		EXPECT_EQ(results.size(), 1);
 	}
@@ -220,7 +220,7 @@ TEST(MoveGen, Moves)
 		b.sq[SquareName::D4] = Piece::BlackPawn;
 
 		std::vector<MoveGenResult> results;
-		move_gen(b, Player::White, results);
+		move_gen(b, results);
 
 		EXPECT_EQ(results.size(), 2);
 	}
@@ -229,7 +229,7 @@ TEST(MoveGen, Moves)
 		b.sq[SquareName::C3] = Piece::WhiteKnight;
 
 		std::vector<MoveGenResult> results;
-		move_gen(b, Player::White, results);
+		move_gen(b, results);
 
 		EXPECT_EQ(results.size(), 8);
 	}
@@ -238,7 +238,7 @@ TEST(MoveGen, Moves)
 		b.sq[SquareName::C3] = Piece::WhiteRook;
 
 		std::vector<MoveGenResult> results;
-		move_gen(b, Player::White, results);
+		move_gen(b, results);
 
 		EXPECT_EQ(results.size(), 14);
 	}
@@ -248,7 +248,7 @@ TEST(MoveGen, Moves)
 		b.sq[SquareName::D3] = Piece::BlackPawn;
 
 		std::vector<MoveGenResult> results;
-		move_gen(b, Player::White, results);
+		move_gen(b, results);
 
 		EXPECT_EQ(results.size(), 10);
 	}
@@ -258,7 +258,7 @@ TEST(MoveGen, Moves)
 		b.sq[SquareName::D3] = Piece::WhitePawn;
 
 		std::vector<MoveGenResult> results;
-		move_gen(b, Player::White, results);
+		move_gen(b, results);
 
 		EXPECT_EQ(results.size(), 10);
 	}

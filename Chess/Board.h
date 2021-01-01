@@ -101,7 +101,12 @@ struct Board
 	int en_passant_target;
 	// - - - - BQ BK WQ WK
 	uint8_t castle_rights;
+	// - - - - - - - Player
+	uint8_t flags;
 
+	Player playerToMove() const { return (flags & 0x1) ? Player::Black : Player::White; }
+	Player oppositePlayer() const { return (flags & 0x1) ? Player::White : Player::Black; }
+	void setPlayer(Player p) { flags = (flags & ~0x1) | (p == Player::Black ? 0x1 : 0x0); }
 	bool isValid(int i) const { return sq[i] != Piece::OffBoard; }
 	bool isFree(int i) const { return sq[i] == Piece::None; }
 	bool isPlayer(int i, Player p) const { return (sq[i] & (uint8_t)p) != 0; }

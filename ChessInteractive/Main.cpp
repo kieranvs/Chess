@@ -25,13 +25,12 @@ public:
 	ChessRepl()
 	{
 		current_board = Utils::get_start_position();
-		player_to_move = Player::White;
 	}
 
 	void print_state()
 	{
 		printf("=============================\n");
-		printf("%s to move:", Utils::get_player_name(player_to_move));
+		printf("%s to move:", Utils::get_player_name(current_board.playerToMove()));
 		Utils::print_board(current_board);
 	}
 
@@ -59,7 +58,7 @@ public:
 		else if (args[0] == "m")
 		{
 			std::vector<MoveGenResult> results;
-			move_gen(current_board, player_to_move, results);
+			move_gen(current_board, results);
 
 			for (int i = 0; i < results.size(); i++)
 			{
@@ -88,7 +87,7 @@ public:
 				return;
 			}
 
-			auto pr = Utils::perft(current_board, player_to_move, depth);
+			auto pr = Utils::perft(current_board, depth);
 
 			printf("Perft d=%d\n", depth);
 			printf("Nodes: %d\n", pr.nodes);
@@ -104,12 +103,11 @@ public:
 			if (args.size() == 2)
 				depth = std::stoi(args[1]);
 
-			auto sr = search(current_board, player_to_move, depth, true);
+			auto sr = search(current_board, depth, true);
 			printf("d=%d, score=%f, %s->%s\n", depth, sr.score, Utils::get_square_name(sr.move.sq_from), Utils::get_square_name(sr.move.sq_to));
 
 			undo_stack.push_back(current_board);
 			current_board = sr.next;
-			player_to_move = Utils::opposite_player(player_to_move);
 		}
 		else if (args[0] == "ep")
 		{
@@ -118,7 +116,7 @@ public:
 			if (args.size() == 2)
 				depth = std::stoi(args[1]);
 
-			auto sr = search(current_board, player_to_move, depth, true);
+			auto sr = search(current_board, depth, true);
 			printf("d=%d, score=%f, %s->%s\n", depth, sr.score, Utils::get_square_name(sr.move.sq_from), Utils::get_square_name(sr.move.sq_to));
 		}
 		else if (args[0] == "u")
@@ -130,7 +128,6 @@ public:
 			}
 			current_board = undo_stack.back();
 			undo_stack.pop_back();
-			player_to_move = Utils::opposite_player(player_to_move);
 		}
 		else if (args[0] == "p")
 		{
@@ -141,7 +138,7 @@ public:
 			}
 
 			std::vector<MoveGenResult> results;
-			move_gen(current_board, player_to_move, results);
+			move_gen(current_board, results);
 			const MoveGenResult* found = nullptr;
 
 			if (args.size() == 2)
@@ -207,7 +204,6 @@ public:
 
 			undo_stack.push_back(current_board);
 			current_board = found->board;
-			player_to_move = Utils::opposite_player(player_to_move);
 		}
 		else if (args[0] == "fen")
 		{
@@ -229,7 +225,6 @@ public:
 
 private:
 	Board current_board;
-	Player player_to_move;
 	std::vector<Board> undo_stack;
 };
 

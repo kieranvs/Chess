@@ -38,6 +38,7 @@ Board Utils::get_blank_board()
 	Board b;
 	b.en_passant_target = 0;
 	b.castle_rights = CastleRightsAll;
+	b.flags = 0;
 	for (int i = 0; i < 120; i++)
 		b.sq[i] = Piece::OffBoard;
 
@@ -143,6 +144,19 @@ Board Utils::get_board_from_fen(const std::string& fen)
 		}
 	};
 
+	auto load_player_section = [&b](const std::string& player_section)
+	{
+		if (player_section == "w" || player_section == "W")
+			b.setPlayer(Player::White);
+		else if (player_section == "b" || player_section == "B")
+			b.setPlayer(Player::Black);
+		else
+		{
+			printf("Invalid fen: invalid player section\n");
+			exit(0);
+		}
+	};
+
 	auto load_castle_section = [&b](const std::string& castle_section)
 	{
 		b.castle_rights = CastleRightsNone;
@@ -158,6 +172,7 @@ Board Utils::get_board_from_fen(const std::string& fen)
 	};
 
 	load_piece_section(sections[0]);
+	load_player_section(sections[1]);
 	load_castle_section(sections[2]);
 
 	return b;
@@ -236,11 +251,10 @@ const char* Utils::get_player_name(Player p)
 	return p == Player::White ? "White" : "Black";
 }
 
-void perft_dfs(const Board& board, Player p, int depth_left, PerftResults& accum)
+void perft_dfs(const Board& board, int depth_left, PerftResults& accum)
 {
-	Player otherPlayer = Utils::opposite_player(p);
 	std::vector<MoveGenResult> results;
-	move_gen(board, p, results);
+	move_gen(board, results);
 
 	if (depth_left == 1)
 	{
@@ -260,13 +274,13 @@ void perft_dfs(const Board& board, Player p, int depth_left, PerftResults& accum
 	else
 	{
 		for (const auto& node : results)
-			perft_dfs(node.board, otherPlayer, depth_left - 1, accum);
+			perft_dfs(node.board, depth_left - 1, accum);
 	}
 }
 
-PerftResults Utils::perft(const Board& b, Player p, int depth)
+PerftResults Utils::perft(const Board& b, int depth)
 {
 	PerftResults accum;
-	perft_dfs(b, p, depth, accum);
+	perft_dfs(b, depth, accum);
 	return accum;
 }

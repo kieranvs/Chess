@@ -34,9 +34,10 @@ const bool OffsetMoveSlides[7] = { false, false, true, false, true, true, false 
 bool is_in_check(const Board& board, Player player);
 bool is_king_in_check_here(const Board& board, Player player, int kingPos);
 
-void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult>& output)
+void move_gen(const Board& board, std::vector<MoveGenResult>& output)
 {
-	Player otherPlayer = Utils::opposite_player(playerToMove);
+	Player playerToMove = board.playerToMove();
+	Player otherPlayer = board.oppositePlayer();
 
 	auto update_castle_rights = [](Board& new_board, int from, int to)
 	{
@@ -61,6 +62,7 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 		node.board.sq[from] = Piece::None;
 		node.board.sq[to] = board.sq[from];
 		node.board.en_passant_target = 0;
+		node.board.setPlayer(board.oppositePlayer());
 		update_castle_rights(node.board, from, to);
 		node.move_type = board.sq[to] == Piece::None ? MoveType::Move : MoveType::Capture;
 		node.sq_from = from;
@@ -75,6 +77,7 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 		node.board = board;
 		node.board.sq[from] = Piece::None;
 		node.board.en_passant_target = 0;
+		node.board.setPlayer(board.oppositePlayer());
 		update_castle_rights(node.board, from, to);
 		node.move_type = board.sq[to] == Piece::None ? MoveType::Promotion : MoveType::CapturePromotion;
 		node.sq_from = from;
@@ -104,6 +107,7 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 		node.board.sq[from] = Piece::None;
 		node.board.sq[to] = board.sq[from];
 		node.board.en_passant_target = en_passant_target;
+		node.board.setPlayer(board.oppositePlayer());
 		node.move_type = MoveType::Move;
 		node.sq_from = from;
 		node.sq_to = to;
@@ -119,6 +123,7 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 		node.board.sq[to] = board.sq[from];
 		node.board.sq[capture] = Piece::None;
 		node.board.en_passant_target = 0;
+		node.board.setPlayer(board.oppositePlayer());
 		node.move_type = MoveType::CaptureEnPassant;
 		node.sq_from = from;
 		node.sq_to = to;
@@ -145,6 +150,7 @@ void move_gen(const Board& board, Player playerToMove, std::vector<MoveGenResult
 		node.board.sq[to_king] = board.sq[from_king];
 		node.board.sq[to_rook] = board.sq[from_rook];
 		node.board.en_passant_target = 0;
+		node.board.setPlayer(board.oppositePlayer());
 		update_castle_rights(node.board, from_king, to_king);
 		node.move_type = MoveType::Castle;
 		node.sq_from = from_king;

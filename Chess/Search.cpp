@@ -5,11 +5,12 @@
 #include <vector>
 #include <optional>
 
-SearchResult search(const Board& board, Player playerToMove, int search_depth, bool use_alpha_beta, double alpha_score, double beta_score)
+SearchResult search(const Board& board, int search_depth, bool use_alpha_beta, double alpha_score, double beta_score)
 {
-	Player otherPlayer = Utils::opposite_player(playerToMove);
+	Player playerToMove = board.playerToMove();
+	Player otherPlayer = board.oppositePlayer();
 	std::vector<MoveGenResult> results;
-	move_gen(board, playerToMove, results);
+	move_gen(board, results);
 
 	// PlayerToMove has no moves so return the worst possible score
 	if (results.empty())
@@ -59,7 +60,7 @@ SearchResult search(const Board& board, Player playerToMove, int search_depth, b
 	{
 		for (int i = 0; i < results.size(); i++)
 		{
-			double score = search(results[i].board, otherPlayer, search_depth - 1, use_alpha_beta, alpha_score, beta_score).score;
+			double score = search(results[i].board, search_depth - 1, use_alpha_beta, alpha_score, beta_score).score;
 
 			if (better_score(score))
 			{
