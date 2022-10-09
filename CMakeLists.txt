@@ -27,6 +27,14 @@ add_executable(
 target_include_directories(ChessInteractive PRIVATE . dependencies)
 target_link_libraries(ChessInteractive PRIVATE gtest Chess)
 
+# ======== ChessUCI ========
+add_executable(
+	ChessUCI
+	ChessUCI/Main.cpp
+)
+target_include_directories(ChessUCI PRIVATE . dependencies)
+target_link_libraries(ChessUCI PRIVATE gtest Chess)
+
 # ======== UnitTest ========
 add_executable(
 	UnitTest
