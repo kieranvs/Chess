@@ -31,7 +31,6 @@ const int OffsetMoveByPiece[7][8] =
 
 const bool OffsetMoveSlides[7] = { false, false, true, false, true, true, false };
 
-bool is_in_check(const Board& board, Player player);
 bool is_king_in_check_here(const Board& board, Player player, int kingPos);
 
 void move_gen(const Board& board, std::vector<MoveGenResult>& output)

@@ -22,4 +22,5 @@ struct MoveGenResult
 	int sq_to;
 };
 
+bool is_in_check(const Board& board, Player player);
 void move_gen(const Board& board, std::vector<MoveGenResult>& output);

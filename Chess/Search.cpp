@@ -5,49 +5,53 @@
 #include <vector>
 #include <optional>
 
-SearchResult search(const Board& board, int search_depth, bool use_alpha_beta, double alpha_score, double beta_score)
+SearchResult search(const Board& board, int search_depth, bool use_alpha_beta, EvalScore alpha_score, EvalScore beta_score)
 {
 	Player playerToMove = board.playerToMove();
 	Player otherPlayer = board.oppositePlayer();
 	std::vector<MoveGenResult> results;
 	move_gen(board, results);
 
-	// PlayerToMove has no moves so return the worst possible score
+	// PlayerToMove has no moves so it's either a checkmate or a stalemate
 	if (results.empty())
 	{
-		if (playerToMove == Player::White)
+		if (is_in_check(board, playerToMove))
 		{
-			SearchResult sr;
-			sr.score = -1000000.0;
+			// Checkmate
+			SearchResult sr{};
+			sr.score.is_mate_white_wins = playerToMove == Player::Black;
+			sr.score.is_mate_black_wins = playerToMove == Player::White;
+			sr.score.mate_in = 0;
 			return sr;
 		}
 		else
 		{
-			SearchResult sr;
-			sr.score = 1000000.0;
+			// Stalemate
+			SearchResult sr{};
+			sr.score.score = 0.0;
 			return sr;
 		}
 	}
 
-	std::optional<double> best_score;
+	std::optional<EvalScore> best_score;
 	MoveGenResult* best_result = &results[0];
 
-	auto better_score = [playerToMove, &best_score](double score)
+	auto better_score = [playerToMove, &best_score](const EvalScore& score)
 	{
-		if (!best_score.has_value() ||
-		   (playerToMove == Player::White && score > *best_score) ||
-		   (playerToMove == Player::Black && score < *best_score))
-		{
-			return true;
-		}
-		return false;
+		if (!best_score.has_value()) return true;
+
+		if (playerToMove == Player::White)
+			return score > *best_score;
+		else
+			return score < *best_score;
 	};
 
 	if (search_depth == 1)
 	{
 		for (int i = 0; i < results.size(); i++)
 		{
-			double score = evaluate_position(results[i].board);
+			EvalScore score{};
+			score.score = evaluate_position(results[i].board);
 
 			if (better_score(score))
 			{
@@ -60,7 +64,13 @@ SearchResult search(const Board& board, int search_depth, bool use_alpha_beta, d
 	{
 		for (int i = 0; i < results.size(); i++)
 		{
-			double score = search(results[i].board, search_depth - 1, use_alpha_beta, alpha_score, beta_score).score;
+			EvalScore score = search(results[i].board, search_depth - 1, use_alpha_beta, alpha_score, beta_score).score;
+
+			if (score.is_mate_white_wins && playerToMove == Player::White)
+				score.mate_in += 1;
+
+			if (score.is_mate_black_wins && playerToMove == Player::Black)
+				score.mate_in += 1;
 
 			if (better_score(score))
 			{

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Board.h"
+#include "Eval.h"
 #include "MoveGen.h"
 
 #include <string>
@@ -23,6 +24,8 @@ namespace Utils
 	const char* get_square_name(int sq);
 
 	const char* get_move_type_as_string(MoveType mt);
+
+	std::string eval_score_to_string(const EvalScore& score);
 
 	const char* get_player_name(Player p);
 	inline Player opposite_player(Player p)

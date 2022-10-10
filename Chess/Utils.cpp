@@ -246,6 +246,16 @@ const char* Utils::get_move_type_as_string(MoveType mt)
 		return "?";
 }
 
+std::string Utils::eval_score_to_string(const EvalScore& score)
+{
+	if (score.is_mate_white_wins)
+		return std::string("M") + std::to_string(score.mate_in);
+	else if (score.is_mate_black_wins)
+		return std::string("M-") + std::to_string(score.mate_in);
+	else
+		return std::to_string(score.score);
+}
+
 const char* Utils::get_player_name(Player p)
 {
 	return p == Player::White ? "White" : "Black";

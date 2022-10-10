@@ -98,10 +98,6 @@ int main()
 							{
 								if ((mgr.board.sq[mgr.sq_to] & PieceTypeMask) == promotion_piece)
 									found = &mgr;
-								else
-								{
-									printf("info string Move failed promotion piece check got %d expected %d\n", mgr.board.sq[mgr.sq_to] & PieceTypeMask, promotion_piece);
-								}
 							}
 							else
 							{
